@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net; style-src 'unsafe-inline'; img-src data:; connect-src https://lqskqqgqdhqgekesqygu.supabase.co; form-action 'none'; base-uri 'none'; frame-ancestors 'none'">
+<title>Approve AI access</title>
+<style>
+  :root { color-scheme: light dark; --fg: #1d2330; --muted: #5d6677; --bg: #f6f7f9; --card: #fff; --line: #dde1e7; --accent: #1f5fbf; --danger: #b3261e; }
+  @media (prefers-color-scheme: dark) { :root { --fg: #e7eaf0; --muted: #a2abbb; --bg: #14171c; --card: #1d2128; --line: #323843; --accent: #7aa7ff; --danger: #ff8a80; } }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; color: var(--fg); background: var(--bg); }
+  main { max-width: 440px; margin: 48px auto; padding: 0 16px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 24px; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  p { margin: 8px 0; }
+  .muted { color: var(--muted); font-size: 14px; }
+  label { display: block; font-size: 14px; margin: 14px 0 4px; color: var(--muted); }
+  input { width: 100%; padding: 10px 12px; font: inherit; border: 1px solid var(--line); border-radius: 8px; background: transparent; color: var(--fg); }
+  button { font: inherit; padding: 10px 16px; border-radius: 8px; border: 1px solid var(--accent); background: var(--accent); color: #fff; cursor: pointer; margin-top: 16px; }
+  button.secondary { background: transparent; color: var(--fg); border-color: var(--line); }
+  button:disabled { opacity: .6; cursor: default; }
+  .row { display: flex; gap: 8px; }
+  .facts { border-top: 1px solid var(--line); margin-top: 16px; padding-top: 8px; }
+  .facts div { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; font-size: 14px; }
+  .facts span:first-child { color: var(--muted); }
+  .facts span:last-child { text-align: right; word-break: break-all; }
+  .error { color: var(--danger); font-size: 14px; min-height: 1.5em; margin-top: 10px; }
+  .qr { display: block; width: 180px; height: 180px; margin: 12px auto; background: #fff; padding: 8px; border-radius: 8px; }
+  code { font-size: 13px; word-break: break-all; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<main>
+  <div class="card">
+    <h1>Approve AI access</h1>
+    <p class="muted">Outlook vault (cloud copy): read-only access to Chris's work mail and calendar.</p>
+
+    <section id="signin" hidden>
+      <label for="email">Email</label>
+      <input id="email" type="email" autocomplete="username">
+      <label for="password">Password</label>
+      <input id="password" type="password" autocomplete="current-password">
+      <button id="signin-button">Sign in</button>
+    </section>
+
+    <section id="enroll" hidden>
+      <p>Set up two-factor sign-in. Scan this with your authenticator app (Microsoft Authenticator, Google Authenticator, 1Password...), then enter the 6-digit code it shows.</p>
+      <img id="qr" class="qr" alt="Authenticator QR code">
+      <p class="muted">Can't scan? Enter this key: <code id="secret"></code></p>
+      <label for="enroll-code">Code</label>
+      <input id="enroll-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6">
+      <button id="enroll-button">Turn on two-factor</button>
+    </section>
+
+    <section id="mfa" hidden>
+      <label for="mfa-code">Authenticator code</label>
+      <input id="mfa-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6">
+      <button id="mfa-button">Verify</button>
+    </section>
+
+    <section id="consent" hidden>
+      <p><strong id="client-name"></strong> wants read-only access to the vault.</p>
+      <div class="facts">
+        <div><span>Returns you to</span><span id="redirect-host"></span></div>
+        <div><span>Signed in as</span><span id="user-email"></span></div>
+      </div>
+      <p class="muted">Approve only if you just started connecting this app yourself. You can revoke it later.</p>
+      <div class="row">
+        <button id="approve">Approve</button>
+        <button id="deny" class="secondary">Deny</button>
+      </div>
+    </section>
+
+    <section id="message" hidden><p id="message-text"></p></section>
+    <div id="error" class="error" role="alert"></div>
+  </div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"
+        integrity="sha384-Rj26LVGvoeRVR6+mwQmFfcR3QOBEwT+ZmuCWpuiqeTzJpCs0ER4ITAWGb4Hiy3Ok" crossorigin="anonymous"></script>
+<script src="consent.js"></script>
+</body>
+</html>
